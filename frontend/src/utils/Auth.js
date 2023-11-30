@@ -1,4 +1,4 @@
-export const baseUrl = 'http://localhost:3000'
+export const baseUrl = 'https://api.eduard.nomoredomainsmonster.ru'
 
 export function register({ email, password }) {
     return fetch(`${baseUrl}/signup`, {
