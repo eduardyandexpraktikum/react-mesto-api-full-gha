@@ -226,7 +226,7 @@ function App() {
               }
             />
             <Route
-              path={'/sign-in'}
+              path={'/signin'}
               element={
                 <Login
                   onSubmit={handleAuth}
@@ -234,7 +234,7 @@ function App() {
               }
             />
             <Route
-              path={'/sign-up'}
+              path={'/signup'}
               element={
                 <Register
                   onSubmit={handleRegister} />

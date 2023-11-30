@@ -8,8 +8,8 @@ function Header({ headerEmail, loggedIn, signOut }) {
             <div className="header__logo"></div>
             <div className="header__user">
                 {!loggedIn && <Routes>
-                    <Route path={'sign-up'} element={<Link to={'/sign-in'} className={'header__authorize-action'}>Войти</Link>} />
-                    <Route path={'sign-in'} element={<Link to={'/sign-up'} className={'header__authorize-action'}>Регистрация</Link>} />
+                    <Route path={'signup'} element={<Link to={'/signin'} className={'header__authorize-action'}>Войти</Link>} />
+                    <Route path={'signin'} element={<Link to={'/signup'} className={'header__authorize-action'}>Регистрация</Link>} />
                 </Routes>}
                 {loggedIn && <>
                     <div className={'header__email'}>{headerEmail}</div>
