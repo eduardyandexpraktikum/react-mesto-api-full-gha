@@ -1,6 +1,8 @@
 const jwt = require('jsonwebtoken');
 const STATUS_CODES = require('../constants/errors');
 
+const { NODE_ENV, JWT_SECRET } = process.env;
+
 const checkAuth = async (req, res, next) => {
   try {
     const { authorization } = req.headers;
@@ -10,7 +12,7 @@ const checkAuth = async (req, res, next) => {
       })
     }
     const token = authorization.split(' ')[1];
-    const result = await jwt.verify(token, 'VERY_SECRET_KEY');
+    const result = await jwt.verify(token, NODE_ENV === 'production' ? JWT_SECRET : 'VERY_SECRET_KEY');
     if (result) {
       req.user = {
         _id: result._id
