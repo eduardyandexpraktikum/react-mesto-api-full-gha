@@ -1,0 +1,7 @@
+.popup__tooltip_pic_fail {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    background-image: url('../../../../images/denied.png');
+    margin: 24px auto 32px;
+}

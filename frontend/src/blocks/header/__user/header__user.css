@@ -1,0 +1,5 @@
+.header__user {
+    display: flex;
+    flex-direction: row;
+    align-self: center;
+}

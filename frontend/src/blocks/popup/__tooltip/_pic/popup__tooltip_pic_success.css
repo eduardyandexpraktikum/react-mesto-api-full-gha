@@ -1,0 +1,7 @@
+.popup__tooltip_pic_success {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    background-image: url('../../../../images/approved.svg');
+    margin: 24px auto 32px;
+}

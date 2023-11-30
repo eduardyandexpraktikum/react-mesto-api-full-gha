@@ -1,0 +1,13 @@
+.profile__avatarbox {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    margin-right: 30px;
+    border-radius: 50%;
+}
+
+@media screen and (max-width: 621px) {
+    .profile__avatarbox {
+        margin: 0px auto 0px;
+    }
+}

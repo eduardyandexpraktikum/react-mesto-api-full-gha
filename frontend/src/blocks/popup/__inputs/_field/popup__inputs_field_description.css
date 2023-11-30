@@ -1,0 +1,12 @@
+.popup__inputs_field_description {
+    padding-bottom: 13px;
+    margin: 0px 0px 5px;
+}
+
+@media screen and (max-width: 621px) {
+
+    .popup__inputs_field_description {
+        padding: 0px 0px 9px;
+        margin-bottom: 44px;
+    }
+}

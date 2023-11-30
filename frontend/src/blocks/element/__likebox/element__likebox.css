@@ -1,0 +1,5 @@
+.element__likebox {
+    display: flex;
+    flex-direction: column;
+    margin: 22px 0px 0px;
+}

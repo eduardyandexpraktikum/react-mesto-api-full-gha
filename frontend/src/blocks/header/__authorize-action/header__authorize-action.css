@@ -1,0 +1,14 @@
+.header__authorize-action {
+    font-family: 'Inter', 'Arial', sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 22px;
+    text-align: right;
+    color: #ffffff;
+    margin-left: 24px;
+    background-color: transparent;
+    border: 0px;
+    text-decoration: none;
+    cursor: pointer;
+}
