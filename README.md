@@ -9,8 +9,8 @@
 
 ## Ссылки на проект
 
-IP-адрес x.x.x.x
+IP 158.160.130.254
 
-Frontend https://...
+Frontend https://eduard.nomoredomainsmonster.ru
 
-Backend https://...
+Backend https://api.eduard.nomoredomainsmonster.ru
