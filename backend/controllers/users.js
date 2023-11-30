@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const User = require('../models/user');
 const STATUS_CODES = require('../constants/errors');
+const { NODE_ENV, JWT_SECRET } = process.env;
 
 const createUser = async (req, res, next) => {
   try {
@@ -75,7 +76,7 @@ const login = async (req, res) => {
 
     const payload = { _id: loginUser._id }
 
-    const token = jwt.sign(payload, 'VERY_SECRET_KEY', { expiresIn: '7d' })
+    const token = jwt.sign(payload, NODE_ENV === 'production' ? JWT_SECRET : 'VERY_SECRET_KEY', { expiresIn: '7d' })
     res.status(STATUS_CODES.OK).send({ token, email })
   } catch (err) {
     return res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send({
