@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const { signUpValidator, signInValidator } = require('./middlewares/validator');
 const { errors } = require('celebrate');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
+const cors = require('cors');
 
 const { PORT = 3000 } = process.env;
 mongoose.connect('mongodb://127.0.0.1:27017/mestodb', {
@@ -17,6 +18,7 @@ const { login, createUser } = require('./controllers/users');
 const cardRouter = require('./routes/cards');
 const userRouter = require('./routes/users');
 
+app.use(cors());
 app.use(json());
 app.use(requestLogger);
 
