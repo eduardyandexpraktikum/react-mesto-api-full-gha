@@ -3,6 +3,11 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const User = require('../models/user');
 const STATUS_CODES = require('../constants/errors');
+const BadRequestError = require('../errors/BadRequestError');
+const UnauthorizedError = require('../errors/UnauthorizedError');
+const ForbiddenError = require('../errors/ForbiddenError');
+const NotFoundError = require('../errors/NotFoundError');
+const ConflictError = require('../errors/ConflictError');
 const { NODE_ENV, JWT_SECRET } = process.env;
 
 const createUser = async (req, res, next) => {
@@ -34,32 +39,24 @@ const createUser = async (req, res, next) => {
       res.status(STATUS_CODES.CONFLICT).send({
         message: 'Такой email уже существует',
       });
+      next(new ConflictError('Такой email уже существует'));
     } else if (err.name === 'ValidationError') {
-      res.status(STATUS_CODES.BAD_REQUEST).send({
-        message: 'Переданы некорректные данные при создании пользователя',
-      });
+      next(new BadRequestError('Переданы некорректные данные при создании пользователя'));
     } else {
-      res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send({
-        message: 'На сервере произошла ошибка',
-      });
       next(err);
     }
   }
 };
 
-const login = async (req, res) => {
+const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
     if (!email || !password) {
-      return res.status(STATUS_CODES.BAD_REQUEST).send({
-        message: 'Неподходящий логин и/или пароль',
-      })
+      return next(new BadRequestError('Неподходящий логин и/или пароль'));
     }
     const loginUser = await User.findOne({ email }).select('+password');
     if (!loginUser) {
-      return res.status(STATUS_CODES.UNAUTHORIZED).send({
-        message: 'Некорректный логин и/или пароль'
-      })
+      return next(new UnauthorizedError('Некорректный логин и/или пароль'));
     }
     const result = bcrypt.compare(password, loginUser.password)
       .then((matched) => {
@@ -69,9 +66,7 @@ const login = async (req, res) => {
         return true;
       });
     if (!result) {
-      res.status(STATUS_CODES.FORBIDDEN).send({
-        message: 'Некорректный логин и/или пароль'
-      })
+      return next(new ForbiddenError('Некорректный логин и/или пароль'));
     }
 
     const payload = { _id: loginUser._id }
@@ -79,62 +74,48 @@ const login = async (req, res) => {
     const token = jwt.sign(payload, NODE_ENV === 'production' ? JWT_SECRET : 'VERY_SECRET_KEY', { expiresIn: '7d' })
     res.status(STATUS_CODES.OK).send({ token, email })
   } catch (err) {
-    return res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send({
-      message: 'На сервере произошла ошибка',
-    })
+    next(err);
   }
 }
 
-const getUsers = (req, res) => {
+const getUsers = (req, res, next) => {
   User.find({})
     .then((users) => {
       res.send(users);
     })
-    .catch(() => res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send({
-      message: 'На сервере произошла ошибка',
-    }));
+    .catch(next);
 };
 
-const getUserById = (req, res) => {
+const getUserById = (req, res, next) => {
   const { userId } = req.params;
   if (!mongoose.isValidObjectId(userId)) {
-    res.status(STATUS_CODES.BAD_REQUEST).send({
-      message: 'Некорректный id',
-    });
+    return next(new BadRequestError('Некорректный id'));
   }
   User.findById(userId)
     .then((user) => {
       if (!user) {
-        res.status(STATUS_CODES.NOT_FOUND).send({
-          message: 'Пользователь не найден',
-        });
+        next(new NotFoundError('Пользователь не найден'));
       } else {
         res.send(user);
       }
     })
-    .catch(() => res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send({
-      message: 'На сервере произошла ошибка',
-    }));
+    .catch(next);
 };
 
-const getMe = (req, res) => {
+const getMe = (req, res, next) => {
   const myself = req.user._id;
   User.findById(myself)
     .then((user) => {
       if (!user) {
-        res.status(STATUS_CODES.NOT_FOUND).send({
-          message: 'Нет информации'
-        });
+        next(new NotFoundError('Нет информации'));
       } else {
         res.send(user);
       }
     })
-    .catch(() => res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send({
-      message: 'На сервере произошла ошибка',
-    }));
+    .catch(next);
 };
 
-const patchMe = async (req, res) => {
+const patchMe = async (req, res, next) => {
   try {
     const user = await User.findById(req.user._id);
     user.name = req.body.name;
@@ -142,30 +123,22 @@ const patchMe = async (req, res) => {
     return res.status(STATUS_CODES.OK).send(await user.save());
   } catch (err) {
     if (err.name === 'ValidationError') {
-      return res.status(STATUS_CODES.BAD_REQUEST).send({
-        message: 'Некорректные данные',
-      });
+      return next(new BadRequestError('Некорректные данные'));
     }
-    return res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send({
-      message: 'На сервере произошла ошибка',
-    });
+    next(err);
   }
 };
 
-const patchAvatar = async (req, res) => {
+const patchAvatar = async (req, res, next) => {
   try {
     const user = await User.findById(req.user._id);
     user.avatar = req.body.avatar;
     return res.status(STATUS_CODES.OK).send(await user.save());
   } catch (error) {
     if (error.name === 'ValidationError') {
-      return res.status(STATUS_CODES.BAD_REQUEST).send({
-        message: 'Некорректные данные',
-      });
+      return next(new BadRequestError('Некорректные данные'));
     }
-    return res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send({
-      message: 'На сервере произошла ошибка',
-    });
+    next(err);
   }
 };
 

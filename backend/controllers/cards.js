@@ -1,15 +1,16 @@
 const mongoose = require('mongoose');
 const Card = require('../models/card');
 const STATUS_CODES = require('../constants/errors');
+const BadRequestError = require('../errors/BadRequestError');
+const ForbiddenError = require('../errors/ForbiddenError');
+const NotFoundError = require('../errors/NotFoundError');
 
-const getCards = (req, res) => {
+const getCards = (req, res, next) => {
   Card.find({})
     .then((cards) => {
       res.send(cards);
     })
-    .catch(() => res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send({
-      message: 'На сервере произошла ошибка',
-    }));
+    .catch(next);
 };
 
 const postCard = async (req, res) => {
@@ -19,13 +20,9 @@ const postCard = async (req, res) => {
     res.status(STATUS_CODES.OK).send(await newCard.save());
   } catch (error) {
     if (error.name === 'ValidationError') {
-      res.status(STATUS_CODES.BAD_REQUEST).send({
-        message: 'Некорректные данные',
-      });
+      next(new BadRequestError('Некорректные данные'));
     } else {
-      res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send({
-        message: 'На сервере произошла ошибка',
-      });
+      next(error);
     }
   }
 };
@@ -33,20 +30,14 @@ const postCard = async (req, res) => {
 const deleteCard = (req, res) => {
   const { cardId } = req.params;
   if (!mongoose.isValidObjectId(cardId)) {
-    res.status(STATUS_CODES.BAD_REQUEST).send({
-      message: 'Невозможно удалить карточку: невалидный _id',
-    });
+    next(new BadRequestError('Невозможно удалить карточку: невалидный _id'));
   } else {
     Card.findById(cardId)
       .then((card) => {
         if (!card) {
-          res.status(STATUS_CODES.NOT_FOUND).send({
-            message: 'Карточка не найдена!',
-          });
+          next(new NotFoundError('Карточка не найдена'));
         } else if (card.owner.toString() !== req.user._id) {
-          res.status(STATUS_CODES.FORBIDDEN).send({
-            message: 'Невозможно удалить карточку: это не ваша карточка',
-          });
+          next(new ForbiddenError('Невозможно удалить карточку: это не ваша карточка'));
         } else {
           Card.deleteOne({ _id: cardId })
             .then(() => {
@@ -56,17 +47,13 @@ const deleteCard = (req, res) => {
             });
         }
       })
-      .catch(() => res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send({
-        message: 'На сервере произошла ошибка',
-      }));
+      .catch(next);
   }
 };
 
 const likeCard = (req, res) => {
   if (!mongoose.isValidObjectId(req.params.cardId)) {
-    res.status(STATUS_CODES.BAD_REQUEST).send({
-      message: 'Некорректные данные',
-    });
+    next(new BadRequestError('Некорректные данные'));
   } else {
     Card.findByIdAndUpdate(
       req.params.cardId,
@@ -75,24 +62,18 @@ const likeCard = (req, res) => {
     )
       .then((card) => {
         if (!card) {
-          res.status(STATUS_CODES.NOT_FOUND).send({
-            message: 'Карточка с указанным _id не найдена.',
-          });
+          next(new NotFoundError('Карточка с указанным _id не найдена'));
         } else {
           res.send(card);
         }
       })
-      .catch(() => res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send({
-        message: 'На сервере произошла ошибка',
-      }));
+      .catch(next);
   }
 };
 
 const dislikeCard = (req, res) => {
   if (!mongoose.isValidObjectId(req.params.cardId)) {
-    res.status(STATUS_CODES.BAD_REQUEST).send({
-      message: 'Некорректные данные',
-    });
+    next(new BadRequestError('Некорректные данные'));
   } else {
     Card.findByIdAndUpdate(
       req.params.cardId,
@@ -101,16 +82,12 @@ const dislikeCard = (req, res) => {
     )
       .then((card) => {
         if (!card) {
-          res.status(STATUS_CODES.NOT_FOUND).send({
-            message: 'Карточка с указанным _id не найдена.',
-          });
+          next(new NotFoundError('Карточка с указанным _id не найдена'));
         } else {
           res.send(card);
         }
       })
-      .catch(() => res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send({
-        message: 'На сервере произошла ошибка',
-      }));
+      .catch(next);
   }
 };
 
