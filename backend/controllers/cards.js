@@ -13,7 +13,7 @@ const getCards = (req, res, next) => {
     .catch(next);
 };
 
-const postCard = async (req, res) => {
+const postCard = async (req, res, next) => {
   try {
     const newCard = new Card(req.body);
     newCard.owner = req.user._id;
@@ -27,7 +27,7 @@ const postCard = async (req, res) => {
   }
 };
 
-const deleteCard = (req, res) => {
+const deleteCard = (req, res, next) => {
   const { cardId } = req.params;
   if (!mongoose.isValidObjectId(cardId)) {
     next(new BadRequestError('Невозможно удалить карточку: невалидный _id'));
@@ -51,7 +51,7 @@ const deleteCard = (req, res) => {
   }
 };
 
-const likeCard = (req, res) => {
+const likeCard = (req, res, next) => {
   if (!mongoose.isValidObjectId(req.params.cardId)) {
     next(new BadRequestError('Некорректные данные'));
   } else {
@@ -71,7 +71,7 @@ const likeCard = (req, res) => {
   }
 };
 
-const dislikeCard = (req, res) => {
+const dislikeCard = (req, res, next) => {
   if (!mongoose.isValidObjectId(req.params.cardId)) {
     next(new BadRequestError('Некорректные данные'));
   } else {
