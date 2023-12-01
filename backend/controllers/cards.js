@@ -18,11 +18,11 @@ const postCard = async (req, res) => {
     const newCard = new Card(req.body);
     newCard.owner = req.user._id;
     res.status(STATUS_CODES.OK).send(await newCard.save());
-  } catch (error) {
-    if (error.name === 'ValidationError') {
+  } catch (err) {
+    if (err.name === 'ValidationError') {
       next(new BadRequestError('Некорректные данные'));
     } else {
-      next(error);
+      next(err);
     }
   }
 };
