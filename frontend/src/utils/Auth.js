@@ -24,12 +24,12 @@ export function login({ email, password }) {
         .then(_getResponseData);
 }
 
-export function checkToken(jwt) {
+export function checkToken(token) {
     return fetch(`${baseUrl}/users/me`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${jwt}`
+            'Authorization': `Bearer ${token}`
         }
     })
         .then(_getResponseData);
