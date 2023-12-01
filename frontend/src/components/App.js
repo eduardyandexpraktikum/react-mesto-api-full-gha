@@ -32,19 +32,6 @@ function App() {
 
   const navigate = useNavigate();
 
-  // const tokenCheck = () => {
-  //   const token = localStorage.getItem('token');
-  //   if (token) {
-  //     checkToken(token)
-  //       .then((user) => {
-  //         handleLogin(user);
-  //         setLoggedIn(true);
-  //         navigate('/');
-  //       })
-  //       .catch(console.log)
-  //   }
-  // }
-
   const closeAllPopups = () => {
     setIsEditProfilePopupOpen(false);
     setIsAddPlacePopupOpen(false);
@@ -91,10 +78,11 @@ function App() {
   }
 
   function handleCardLike(card) {
-    const isLiked = card.likes.some(i => i._id === currentUser._id);
-    api.putLike(card._id, !isLiked)
+    const isLiked = card.likes.some(id => id === currentUser._id);
+    api.changeLikeCardStatus(card._id, !isLiked)
       .then((newCard) => {
-        setCards((state) => state.map((c) => c._id === card._id ? newCard : c));
+        setCards((state) => state.map((c) => (c._id === card._id ? newCard : c))
+        );
       })
       .catch((err) => { console.log(err) });
   }
@@ -125,7 +113,6 @@ function App() {
   function handleRegister(values) {
     register(values)
       .then((data) => {
-        console.log(data)
         if (data) {
           setSuccessReg(true);
           setIsTooltipPopupOpen(true)
@@ -162,14 +149,13 @@ function App() {
   }
 
   useEffect(() => {
-    console.log('textAuth');
     const tokenCheck = () => {
       const token = localStorage.getItem('token');
       if (token) {
         checkToken(token)
           .then((user) => {
             handleLogin(user);
-            setLoggedIn(true);
+            console.log(token);
             navigate('/');
           })
           .catch(console.log)
@@ -182,7 +168,6 @@ function App() {
     console.log('textUser')
     api.getUserInfo()
       .then((data) => {
-        console.log(data);
         setCurrentUser(data);
       })
       .catch((err) => { console.log(err) });

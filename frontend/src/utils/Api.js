@@ -3,7 +3,6 @@ const token = localStorage.getItem('token');
 class Api {
     constructor(config) {
         this.baseUrl = config.baseUrl;
-        this.headers = config.headers;
     }
 
     getInitialCards() {
@@ -90,6 +89,17 @@ class Api {
             },
         })
             .then(this._getResponseData);
+    }
+
+    changeLikeCardStatus(cardId, isLiked) {
+        return fetch(`${this.baseUrl}/cards/${cardId}/likes`, {
+            method: isLiked ? 'PUT' : 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+        })
+            .then(this._checkResponse);
     }
 
     patchAvatar({ link }) {
