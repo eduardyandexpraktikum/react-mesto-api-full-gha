@@ -137,7 +137,7 @@ function App() {
       })
       .finally(() => {
         if (setSuccessReg) {
-          navigate('/sign-in');
+          navigate('/signin');
         }
       })
   }
@@ -157,7 +157,7 @@ function App() {
 
   function signOut() {
     localStorage.removeItem('token')
-    navigate('./sign-in')
+    navigate('./signin')
     setLoggedIn(false)
   }
 
