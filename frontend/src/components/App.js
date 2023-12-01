@@ -135,6 +135,7 @@ function App() {
         if (data.token) {
           localStorage.setItem('token', data.token);
           handleLogin(data);
+          navigate('/');
         }
       })
       .catch((err) => {
