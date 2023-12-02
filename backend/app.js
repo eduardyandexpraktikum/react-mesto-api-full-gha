@@ -37,9 +37,7 @@ app.use(checkAuth);
 app.use('/cards', cardRouter);
 app.use('/users', userRouter);
 app.use('/', (req, res, next) => {
-  next(res.status(404).send({
-    message: 'Невозможно отобразить страницу',
-  }));
+  next(new NotFoundError('Маршрут не найден'));
 });
 
 app.use(errorLogger);
