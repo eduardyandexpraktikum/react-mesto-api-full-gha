@@ -5,6 +5,7 @@ const { signUpValidator, signInValidator } = require('./middlewares/validator');
 const { errors } = require('celebrate');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const cors = require('cors');
+const NotFoundError = require('../errors/NotFoundError');
 
 const { PORT = 3000 } = process.env;
 mongoose.connect('mongodb://127.0.0.1:27017/mestodb', {
