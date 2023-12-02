@@ -26,7 +26,7 @@ function App() {
   const [selectedCard, setSelectedCard] = useState({});
   const [currentUser, setCurrentUser] = useState({});
   const [cards, setCards] = useState([]);
-  const [loggedIn, setLoggedIn] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(localStorage.getItem('token'));
   const [successReg, setSuccessReg] = useState(false);
   const [headerEmail, setHeaderEmail] = useState('');
 
@@ -81,8 +81,11 @@ function App() {
     const isLiked = card.likes.some(id => id === currentUser._id);
     api.changeLikeCardStatus(card._id, !isLiked)
       .then((newCard) => {
-        setCards((state) => state.map((c) => (c._id === card._id ? newCard : c))
+        console.log(newCard)
+        setCards((state) =>
+          state.map((c) => (c._id === card._id ? newCard : c))
         );
+
       })
       .catch((err) => { console.log(err) });
   }
@@ -134,12 +137,12 @@ function App() {
       .then((data) => {
         if (data.token) {
           localStorage.setItem('token', data.token);
-          handleLogin(data);
-          navigate('/');
+          setLoggedIn(true);
         }
       })
       .catch((err) => {
-        console.log(err)
+        setLoggedIn(false);
+        setIsTooltipPopupOpen(true);
       })
   }
 
@@ -152,21 +155,23 @@ function App() {
   useEffect(() => {
     const tokenCheck = () => {
       const token = localStorage.getItem('token');
-      if (token) {
+      if (loggedIn) {
         checkToken(token)
           .then((user) => {
             handleLogin(user);
-            console.log(token);
-            navigate('/');
+            navigate('/', { replace: true });
           })
-          .catch(console.log)
+          .catch((err) => {
+            console.log(err);
+            setLoggedIn(false);
+          })
       }
     }
     tokenCheck();
-  }, [loggedIn]);
+  }, []);
 
   useEffect(() => {
-    console.log('textUser')
+    console.log('getusers')
     api.getUserInfo()
       .then((data) => {
         setCurrentUser(data);
@@ -175,13 +180,13 @@ function App() {
   }, []);
 
   useEffect(() => {
-    console.log('textCard')
+    console.log('getcards')
     api.getInitialCards()
       .then((data) => {
         setCards(data)
       })
       .catch((err) => { console.log(err) });
-  }, [setCards]);
+  }, []);
 
   return (
     <div className='body'>

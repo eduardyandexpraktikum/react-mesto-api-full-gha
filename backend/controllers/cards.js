@@ -65,6 +65,7 @@ const likeCard = (req, res, next) => {
           next(new NotFoundError('Карточка с указанным _id не найдена'));
         } else {
           res.send(card);
+          console.log(card);
         }
       })
       .catch(next);

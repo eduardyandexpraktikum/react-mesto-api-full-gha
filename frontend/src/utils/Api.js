@@ -5,6 +5,10 @@ class Api {
         this.baseUrl = config.baseUrl;
     }
 
+    getAppInfo() {
+        return Promise.all([this.getInitialCards(), this.getUserInfo()]);
+    }
+
     getInitialCards() {
         return fetch(`${this.baseUrl}/cards`, {
             method: 'GET',
