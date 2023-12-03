@@ -29,8 +29,37 @@ function App() {
   const [loggedIn, setLoggedIn] = useState(localStorage.getItem('token'));
   const [successReg, setSuccessReg] = useState(false);
   const [headerEmail, setHeaderEmail] = useState('');
-
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      Promise.all([api.getUserInfo(token), api.getInitialCards(token)])
+        .then(([userData, cardData]) => {
+          setCurrentUser(userData);
+          setCards(cardData);
+        })
+        .catch((err) => { console.log(err) });
+    }
+  }, [loggedIn]);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      checkToken()
+        .then((res) => {
+          setHeaderEmail(res.email);
+          setLoggedIn(true);
+          navigate('/');
+          api.getInitialCards(token).then((data) => setCards(data)).catch((err) => console.log(err));
+          api.getUserInfo(token).then((data) => setCurrentUser(data)).catch((err) => console.log(err));
+        })
+        .catch((err) => {
+          localStorage.removeItem('token');
+          console.log(err);
+        });
+    }
+  }, [navigate]);
 
   const closeAllPopups = () => {
     setIsEditProfilePopupOpen(false);
@@ -79,13 +108,10 @@ function App() {
 
   function handleCardLike(card) {
     const isLiked = card.likes.some(id => id === currentUser._id);
+    console.log(isLiked)
     api.changeLikeCardStatus(card._id, !isLiked)
       .then((newCard) => {
-        console.log(newCard)
-        setCards((state) =>
-          state.map((c) => (c._id === card._id ? newCard : c))
-        );
-
+        setCards((state) => state.map((c) => c._id === card._id ? newCard : c));
       })
       .catch((err) => { console.log(err) });
   }
@@ -108,37 +134,26 @@ function App() {
       .catch((err) => { console.log(err) });
   }
 
-  function handleLogin(user) {
-    setLoggedIn(true);
-    setHeaderEmail(user.email);
-  }
-
   function handleRegister(values) {
     register(values)
-      .then((data) => {
-        if (data) {
-          setSuccessReg(true);
-          setIsTooltipPopupOpen(true)
-        };
+      .then(() => {
+        setSuccessReg(true);
+        setIsTooltipPopupOpen(true);
+        navigate('/signin');
       })
       .catch(() => {
         setSuccessReg(false);
         setIsTooltipPopupOpen(true);
-      })
-      .finally(() => {
-        if (setSuccessReg) {
-          navigate('/signin');
-        }
       })
   }
 
   function handleAuth(values) {
     login(values)
       .then((data) => {
-        if (data.token) {
-          localStorage.setItem('token', data.token);
-          setLoggedIn(true);
-        }
+        localStorage.setItem('token', data.token);
+        setHeaderEmail(data.email);
+        setLoggedIn(true);
+        navigate('/');
       })
       .catch((err) => {
         setLoggedIn(false);
@@ -151,42 +166,6 @@ function App() {
     navigate('./signin')
     setLoggedIn(false)
   }
-
-  useEffect(() => {
-    const tokenCheck = () => {
-      const token = localStorage.getItem('token');
-      if (loggedIn) {
-        checkToken(token)
-          .then((user) => {
-            handleLogin(user);
-            navigate('/', { replace: true });
-          })
-          .catch((err) => {
-            console.log(err);
-            setLoggedIn(false);
-          })
-      }
-    }
-    tokenCheck();
-  }, []);
-
-  useEffect(() => {
-    console.log('getusers')
-    api.getUserInfo()
-      .then((data) => {
-        setCurrentUser(data);
-      })
-      .catch((err) => { console.log(err) });
-  }, []);
-
-  useEffect(() => {
-    console.log('getcards')
-    api.getInitialCards()
-      .then((data) => {
-        setCards(data)
-      })
-      .catch((err) => { console.log(err) });
-  }, []);
 
   return (
     <div className='body'>

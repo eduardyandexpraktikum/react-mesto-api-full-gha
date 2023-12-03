@@ -5,11 +5,7 @@ class Api {
         this.baseUrl = config.baseUrl;
     }
 
-    getAppInfo() {
-        return Promise.all([this.getInitialCards(), this.getUserInfo()]);
-    }
-
-    getInitialCards() {
+    getInitialCards(token) {
         return fetch(`${this.baseUrl}/cards`, {
             method: 'GET',
             headers: {
@@ -21,7 +17,7 @@ class Api {
 
     }
 
-    getUserInfo() {
+    getUserInfo(token) {
         return fetch(`${this.baseUrl}/users/me`, {
             method: 'GET',
             headers: {
@@ -103,7 +99,7 @@ class Api {
                 'Content-Type': 'application/json',
             },
         })
-            .then(this._checkResponse);
+            .then(this._getResponseData);
     }
 
     patchAvatar({ link }) {

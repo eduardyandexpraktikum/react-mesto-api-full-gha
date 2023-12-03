@@ -21,10 +21,15 @@ export function login({ email, password }) {
         },
         body: JSON.stringify({ email, password })
     })
-        .then(_getResponseData);
+        .then(_getResponseData)
+        .then((data) => {
+            localStorage.setItem('token', data.token)
+            return data;
+        })
 }
 
-export function checkToken(token) {
+export function checkToken() {
+    const token = localStorage.getItem('token');
     return fetch(`${baseUrl}/users/me`, {
         method: 'GET',
         headers: {
