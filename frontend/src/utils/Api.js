@@ -1,15 +1,15 @@
-const token = localStorage.getItem('token');
+// const token = localStorage.getItem('token');
 
 class Api {
     constructor(config) {
         this.baseUrl = config.baseUrl;
     }
 
-    getInitialCards(token) {
+    getInitialCards() {
         return fetch(`${this.baseUrl}/cards`, {
             method: 'GET',
             headers: {
-                'Authorization': `Bearer ${token}`,
+                'Authorization': `Bearer ${localStorage.getItem('token')}`,
                 'Content-Type': 'application/json',
             },
         })
@@ -17,11 +17,11 @@ class Api {
 
     }
 
-    getUserInfo(token) {
+    getUserInfo() {
         return fetch(`${this.baseUrl}/users/me`, {
             method: 'GET',
             headers: {
-                'Authorization': `Bearer ${token}`,
+                'Authorization': `Bearer ${localStorage.getItem('token')}`,
                 'Content-Type': 'application/json',
             },
         })
@@ -32,7 +32,7 @@ class Api {
         return fetch(`${this.baseUrl}/users/me`, {
             method: 'PATCH',
             headers: {
-                'Authorization': `Bearer ${token}`,
+                'Authorization': `Bearer ${localStorage.getItem('token')}`,
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
@@ -47,7 +47,7 @@ class Api {
         return fetch(`${this.baseUrl}/cards`, {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${token}`,
+                'Authorization': `Bearer ${localStorage.getItem('token')}`,
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
@@ -62,7 +62,7 @@ class Api {
         return fetch(`${this.baseUrl}/cards/${cardId}`, {
             method: 'DELETE',
             headers: {
-                'Authorization': `Bearer ${token}`,
+                'Authorization': `Bearer ${localStorage.getItem('token')}`,
                 'Content-Type': 'application/json',
             },
         })
@@ -73,7 +73,7 @@ class Api {
         return fetch(`${this.baseUrl}/cards/${cardId}/likes`, {
             method: 'PUT',
             headers: {
-                'Authorization': `Bearer ${token}`,
+                'Authorization': `Bearer ${localStorage.getItem('token')}`,
                 'Content-Type': 'application/json',
             },
         })
@@ -84,7 +84,7 @@ class Api {
         return fetch(`${this.baseUrl}/cards/${cardId}/likes`, {
             method: 'DELETE',
             headers: {
-                'Authorization': `Bearer ${token}`,
+                'Authorization': `Bearer ${localStorage.getItem('token')}`,
                 'Content-Type': 'application/json',
             },
         })
@@ -95,7 +95,7 @@ class Api {
         return fetch(`${this.baseUrl}/cards/${cardId}/likes`, {
             method: isLiked ? 'PUT' : 'DELETE',
             headers: {
-                'Authorization': `Bearer ${token}`,
+                'Authorization': `Bearer ${localStorage.getItem('token')}`,
                 'Content-Type': 'application/json',
             },
         })
@@ -106,7 +106,7 @@ class Api {
         return fetch(`${this.baseUrl}/users/me/avatar`, {
             method: 'PATCH',
             headers: {
-                'Authorization': `Bearer ${token}`,
+                'Authorization': `Bearer ${localStorage.getItem('token')}`,
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({

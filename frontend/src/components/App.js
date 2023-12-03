@@ -34,7 +34,7 @@ function App() {
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
-      Promise.all([api.getUserInfo(token), api.getInitialCards(token)])
+      Promise.all([api.getUserInfo(), api.getInitialCards()])
         .then(([userData, cardData]) => {
           setCurrentUser(userData);
           setCards(cardData);
@@ -46,13 +46,11 @@ function App() {
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
-      checkToken()
+      checkToken(token)
         .then((res) => {
           setHeaderEmail(res.email);
           setLoggedIn(true);
           navigate('/');
-          api.getInitialCards(token).then((data) => setCards(data)).catch((err) => console.log(err));
-          api.getUserInfo(token).then((data) => setCurrentUser(data)).catch((err) => console.log(err));
         })
         .catch((err) => {
           localStorage.removeItem('token');

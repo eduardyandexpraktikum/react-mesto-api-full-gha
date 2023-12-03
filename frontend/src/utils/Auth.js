@@ -28,8 +28,7 @@ export function login({ email, password }) {
         })
 }
 
-export function checkToken() {
-    const token = localStorage.getItem('token');
+export function checkToken(token) {
     return fetch(`${baseUrl}/users/me`, {
         method: 'GET',
         headers: {
